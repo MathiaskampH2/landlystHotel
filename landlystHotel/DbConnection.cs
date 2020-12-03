@@ -1,13 +1,11 @@
 using System.Configuration;
-using System.Data.SqlClient;
-using System.Runtime.Remoting.Messaging;
 
-namespace landlystHotelWebApp.Classes
+namespace landlystHotel
 {
     public static class DbConnection
     {
-        public static string connection()
-        { 
+        public static string Connection()
+        {
             string con = ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
 
             return con;

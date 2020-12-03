@@ -1,13 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;      
 
-namespace landlystHotelWebApp.Classes
+namespace landlystHotel
 {
     class Program
     {
@@ -19,7 +13,7 @@ namespace landlystHotelWebApp.Classes
             //{
             //    Console.WriteLine(room.RoomNumber);
             //}
-
+            Console.Write("Enter the room number that you want to use :");
             int userRoomNumber = int.Parse(Console.ReadLine());
 
             List<TotalPrices> totalPrice = HotelManager.GeTotalPrice(userRoomNumber);
@@ -28,6 +22,16 @@ namespace landlystHotelWebApp.Classes
             {
                 Console.WriteLine(price.TotalPrice);
             }
+
+
+            //List<Features> features = HotelManager.GetRoomFeatures(userRoomNumber);
+
+            //foreach (Features feature in features)
+            //{
+            //    Console.WriteLine(feature.Description);
+            //}
+
+
         }
     }
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+}

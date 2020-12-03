@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace landlystHotelWebApp.Classes
+﻿namespace landlystHotel
 {
     public class Room
     {
@@ -19,7 +14,7 @@ namespace landlystHotelWebApp.Classes
         {
             this.RoomNumber = roomNumber;
         }
-        public Room(int roomNumber, int hotelNumber, int floorLevel, int price, int reserved, string condition)
+        public Room(int roomNumber, int hotelNumber, int floorLevel, decimal price, int reserved, string condition)
             : this(roomNumber)
         {
             this.HotelNumber = hotelNumber;

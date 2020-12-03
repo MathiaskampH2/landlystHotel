@@ -1,7 +1,6 @@
-﻿using System.CodeDom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace landlystHotelWebApp.Classes
+namespace landlystHotel
 {
     public static class HotelManager
     {
@@ -13,6 +12,11 @@ namespace landlystHotelWebApp.Classes
         public static List<TotalPrices> GeTotalPrice(int roomNumber)
         {
             return ServerManager.TotalPrice(roomNumber);
+        }
+
+        public static List<Features> GetRoomFeatures(int roomNumber)
+        {
+            return ServerManager.GetRoomFeatures(roomNumber);
         }
     }
 }

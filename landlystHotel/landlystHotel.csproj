@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Customer.cs" />
     <Compile Include="DbConnection.cs" />
+    <Compile Include="Features.cs" />
     <Compile Include="HotelManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
