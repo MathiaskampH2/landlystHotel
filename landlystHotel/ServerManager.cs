@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Dynamic;
 using System.Runtime.CompilerServices;
 
 namespace landlystHotel
@@ -57,43 +58,6 @@ namespace landlystHotel
             return rooms;
         }
 
-        public static List<TotalPrices> TotalPrice(int roomNumber)
-        {
-            List<TotalPrices> prices = new List<TotalPrices>();
-
-            using (SqlConnection connection = new SqlConnection(Con))
-
-            {
-                try
-                {
-                    connection.Open();
-
-                    SqlCommand sql = new SqlCommand("sp_GetRoomPrice", connection)
-                    {
-                        CommandType = CommandType.StoredProcedure
-                    };
-
-                    sql.Parameters.Add(new SqlParameter("@roomNumber", roomNumber));
-                    rdr = sql.ExecuteReader();
-                    while (rdr.Read())
-                    {
-                        decimal totalPrice = (decimal) rdr["totalprice"];
-                        TotalPrices totalPrices = new TotalPrices(totalPrice);
-
-                        prices.Add(totalPrices);
-                    }
-                }
-                finally
-                {
-                    connection?.Close();
-
-                    rdr?.Close();
-                }
-            }
-
-            return prices;
-        }
-
 
         public static List<Features> GetRoomFeatures(int roomNumber)
         {
@@ -132,14 +96,65 @@ namespace landlystHotel
             return features;
         }
 
-        public static List<Reservation> CreateReservation (string phoneNumber, int roomNumber, DateTime checkInDate, DateTime checkOutDate, int daysToStay, decimal totalPrice)
+
+
+
+
+        public static List<Customer> CreateCustomer(string fName, string lName, int zipCode, string address, string phoneNumber, string email)
+        {
+            List<Customer> customers = new List<Customer>();
+
+            using (SqlConnection connection = new SqlConnection(Con))
+
+            {
+                try
+                {
+                    connection.Open();
+
+                    SqlCommand sql = new SqlCommand("sp_insertCustomer", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+                    sql.Parameters.Add(new SqlParameter("@fName", fName));
+                    sql.Parameters.Add(new SqlParameter("@lName", lName));
+                    sql.Parameters.Add(new SqlParameter("@zipcode", zipCode));
+                    sql.Parameters.Add(new SqlParameter("@address", address));
+                    sql.Parameters.Add(new SqlParameter("@phoneNumber", phoneNumber));
+                    sql.Parameters.Add(new SqlParameter("@email", email));
+
+                    rdr = sql.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        string custFName = (string)rdr["fName"];
+                        string custLName = (string)rdr["lName"];
+                        int custZipcode = (int)rdr["zipCode"];
+                        string custAddress = (string)rdr["address"];
+                        string custPhoneNumber = (string)rdr["PhoneNumber"];
+                        string custEmail = (string)rdr["email"];
+
+                        Customer customer = new Customer(custFName, custLName, custZipcode, custAddress, custPhoneNumber, custEmail);
+                        customers.Add(customer);
+                    }
+                }
+                finally
+                {
+                    connection?.Close();
+
+                    rdr?.Close();
+                }
+            }
+
+            return customers;
+        }
+
+        public static List<Reservation> CreateReservation(string phoneNumber, int roomNumber, DateTime checkInDate, DateTime checkoutDate)
         {
             List<Reservation> reservations = new List<Reservation>();
 
-            List<TotalPrices> totPrices =  TotalPrice(roomNumber);
+            int daysToStay = (checkoutDate - checkInDate).Days;
 
-            string totPrice = string.Concat(totPrices);
-
+            decimal totalPrice = ConvertTotalPRiceToDecimal(roomNumber) * daysToStay;
 
             using (SqlConnection connection = new SqlConnection(Con))
 
@@ -155,22 +170,19 @@ namespace landlystHotel
 
                     sql.Parameters.Add(new SqlParameter("@custPhoneNumber", phoneNumber));
                     sql.Parameters.Add(new SqlParameter("@roomNumber", roomNumber));
-                    sql.Parameters.Add(new SqlParameter("@checkInDate", checkInDate));
-                    sql.Parameters.Add(new SqlParameter("@checkOutDate", checkOutDate));
+                    sql.Parameters.Add(new SqlParameter("@checkInDate", checkInDate.Date));
+                    sql.Parameters.Add(new SqlParameter("@checkOutDate", checkoutDate.Date));
                     sql.Parameters.Add(new SqlParameter("@daysToStay", daysToStay));
-                    sql.Parameters.Add(new SqlParameter("@totalprice", totalPrice));
-
+                    sql.Parameters.Add(new SqlParameter("@totalPrice", totalPrice));
                     rdr = sql.ExecuteReader();
                     while (rdr.Read())
                     {
-                        string custPhoneNumber = (string)rdr["custPhoneNumber"];
-                        string description = (string)rdr["description"];
-                        string description = (string)rdr["description"];
-                        string description = (string)rdr["description"];
-                        string description = (string)rdr["description"];
-                        string description = (string)rdr["description"];
+                        string resPhoneNumber = (string)rdr["custPhoneNumber"];
+                        int    resRoomNumber  = (int)rdr["roomNumber"];
+                        DateTime resCheckInDate = (DateTime)rdr["checkInDate"];
+                        DateTime resCheckOutDate = (DateTime)rdr["CheckOutDate"];
 
-                        Reservation reservation = new Reservation(phoneNumber, roomNumber, checkInDate, checkOutDate, daysToStay, totalPrice);
+                        Reservation reservation = new Reservation(resPhoneNumber, resRoomNumber, resCheckInDate, resCheckOutDate, daysToStay, totalPrice);
                         reservations.Add(reservation);
                     }
                 }
@@ -183,6 +195,51 @@ namespace landlystHotel
             }
 
             return reservations;
+        }
+
+        public static List<TotalPrices> TotalPrice(int roomNumber)
+        {
+            List<TotalPrices> prices = new List<TotalPrices>();
+
+            using (SqlConnection connection = new SqlConnection(Con))
+
+            {
+                try
+                {
+                    connection.Open();
+
+                    SqlCommand sql = new SqlCommand("sp_GetRoomPrice", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+                    sql.Parameters.Add(new SqlParameter("@roomNumber", roomNumber));
+                    rdr = sql.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        decimal totalPrice = (decimal)rdr["totalprice"];
+                        TotalPrices totalPrices = new TotalPrices(totalPrice);
+
+                        prices.Add(totalPrices);
+                    }
+                }
+                finally
+                {
+                    connection?.Close();
+
+                    rdr?.Close();
+                }
+            }
+
+            return prices;
+        }
+
+        public static decimal ConvertTotalPRiceToDecimal(int roomNumber)
+        {
+            List<TotalPrices> prices = TotalPrice(roomNumber);
+
+            decimal price = Convert.ToDecimal(prices[0].TotalPrice.ToString());
+            return price;
         }
     }
 }

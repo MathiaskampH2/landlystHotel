@@ -1,0 +1,36 @@
+﻿ public static List<> GetRoomFeatures()
+        {
+            List<> features = new List<>();
+
+            using (SqlConnection connection = new SqlConnection(Con))
+
+            {
+                try
+                {
+                    connection.Open();
+
+                    SqlCommand sql = new SqlCommand("", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+                    sql.Parameters.Add(new SqlParameter("", ));
+                    rdr = sql.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        string description = (string) rdr["description"];
+
+                        Features feature = new Features(description);
+                        features.Add();
+                    }
+                }
+                finally
+                {
+                    connection?.Close();
+
+                    rdr?.Close();
+                }
+            }
+
+            return ;
+        }

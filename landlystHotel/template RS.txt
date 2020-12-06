@@ -1,0 +1,44 @@
+﻿public static List<Room> GetAllRooms()
+        {
+            List<Room> rooms = new List<Room>();
+
+            using (SqlConnection connection = new SqlConnection(Con))
+
+            {
+                try
+                {
+                    connection.Open();
+
+                    SqlCommand sql = new SqlCommand("select * from room", connection);
+                    rdr = sql.ExecuteReader();
+
+                    while (rdr.Read())
+                    {
+                        int roomNumber = (int) rdr["RoomNumber"];
+
+                        int hotelNumber = (int) rdr["hotelNumber"];
+
+                        byte floorLevel = Convert.ToByte(rdr["floorLevel"]);
+
+                        decimal price = (decimal) rdr["price"];
+
+                        byte reserved = Convert.ToByte(rdr["reserved"]);
+
+                        string condition = (string) rdr["condition"];
+
+                        Room r = new Room(roomNumber, hotelNumber, floorLevel, price, reserved, condition);
+
+                        rooms.Add(r);
+                    }
+                }
+
+                finally
+                {
+                    connection?.Close();
+
+                    rdr?.Close();
+                }
+            }
+
+            return rooms;
+        }

@@ -1,4 +1,6 @@
-﻿namespace landlystHotel
+﻿using System.Runtime.ExceptionServices;
+
+namespace landlystHotel
 {
     public class Customer
     {
@@ -19,6 +21,15 @@
             this.Email = email;
         }
 
-
+        public override string ToString()
+        {
+            return
+                   "First Name :" + FName + "\n" +
+                   "Last Name  :" + LName + "\n" +
+                   "zipcode    :" + ZipCode + "\n" +
+                   "address    :" + Address + "\n" +
+                   "phone number :" + PhoneNumber + "\n" +
+                   "email :" + Email + "\n";
+        }
     }
 }
