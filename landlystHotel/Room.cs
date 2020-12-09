@@ -1,44 +1,32 @@
-﻿namespace landlystHotel
+﻿using System.Collections.Generic;
+using System.Text;
+
+namespace landlystHotel
 {
     public class Room
     {
-        public int RoomNumber { get; set; }
-        public int HotelNumber  { get; set; }
-        public int FloorLevel { get; set; }
-        public decimal Price { get; set; }
-        public int Reserved { get; set; }
-        public string Condition { get; set; }
+        public int RoomNum { get; set; }
 
+        public decimal RoomPrice { get; set; }
+        //public int HotelNumber  { get; set; }
+        //public int FloorLevel { get; set; }
+        //public decimal Price { get; set; }
+        //public int Reserved { get; set; }
+        //public string Condition { get; set; }
 
-        public Room(int roomNumber)
-        {
-            this.RoomNumber = roomNumber;
-        }
-        public Room(int roomNumber, int hotelNumber, int floorLevel, decimal price, int reserved, string condition)
-            : this(roomNumber)
-        {
-            this.HotelNumber = hotelNumber;
-            this.FloorLevel = floorLevel;
-            this.Price = price;
-            this.Reserved = reserved;
-            this.Condition = condition;
-        }
+        public List<RoomAndFeatures> RoomFeatures { get; set; }
 
-        public Room(int roomNumber, int hotelNumber)
-        : this(roomNumber)
+        public override string ToString()
         {
-            this.HotelNumber = hotelNumber;
+            StringBuilder st = new StringBuilder();
+
+            foreach (RoomAndFeatures roomFeature in RoomFeatures)
+            {
+                st.AppendLine($"{RoomNum} :  {roomFeature.FeatureDescription}");
+            }
+
+            return  st.ToString();
         }
 
-
-        public Room(int roomNumber, int hotelNumber, int floorLevel)
-            : this(roomNumber, hotelNumber)
-        {
-            this.FloorLevel = floorLevel;
-        }
-
-        public Room()
-        {
-        }
     }
 }

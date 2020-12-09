@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Dapper;
 
 namespace landlystHotel
 {
@@ -13,50 +15,51 @@ namespace landlystHotel
 
         private static SqlDataReader rdr = null;
 
-        public static List<Room> GetAllRooms()
-        {
-            List<Room> rooms = new List<Room>();
 
-            using (SqlConnection connection = new SqlConnection(Con))
+        //public static List<Room> GetAllRooms()
+        //{
+        //    List<Room> rooms = new List<Room>();
 
-            {
-                try
-                {
-                    connection.Open();
+        //    using (SqlConnection connection = new SqlConnection(Con))
 
-                    SqlCommand sql = new SqlCommand("select * from room", connection);
-                    rdr = sql.ExecuteReader();
+        //    {
+        //        try
+        //        {
+        //            connection.Open();
 
-                    while (rdr.Read())
-                    {
-                        int roomNumber = (int) rdr["RoomNumber"];
+        //            SqlCommand sql = new SqlCommand("select * from room", connection);
+        //            rdr = sql.ExecuteReader();
 
-                        int hotelNumber = (int) rdr["hotelNumber"];
+        //            while (rdr.Read())
+        //            {
+        //                int roomNumber = (int) rdr["RoomNumber"];
 
-                        byte floorLevel = Convert.ToByte(rdr["floorLevel"]);
+        //                int hotelNumber = (int) rdr["hotelNumber"];
 
-                        decimal price = (decimal) rdr["price"];
+        //                byte floorLevel = Convert.ToByte(rdr["floorLevel"]);
 
-                        byte reserved = Convert.ToByte(rdr["reserved"]);
+        //                decimal price = (decimal) rdr["price"];
 
-                        string condition = (string) rdr["condition"];
+        //                byte reserved = Convert.ToByte(rdr["reserved"]);
 
-                        Room r = new Room(roomNumber, hotelNumber, floorLevel, price, reserved, condition);
+        //                string condition = (string) rdr["condition"];
 
-                        rooms.Add(r);
-                    }
-                }
+        //                Room r = new Room(roomNumber, hotelNumber, floorLevel, price, reserved, condition);
 
-                finally
-                {
-                    connection?.Close();
+        //                rooms.Add(r);
+        //            }
+        //        }
 
-                    rdr?.Close();
-                }
-            }
+        //        finally
+        //        {
+        //            connection?.Close();
 
-            return rooms;
-        }
+        //            rdr?.Close();
+        //        }
+        //    }
+
+        //    return rooms;
+        //}
 
 
         public static List<Features> GetRoomFeatures(int roomNumber)
@@ -97,10 +100,8 @@ namespace landlystHotel
         }
 
 
-
-
-
-        public static List<Customer> CreateCustomer(string fName, string lName, int zipCode, string address, string phoneNumber, string email)
+        public static List<Customer> CreateCustomer(string fName, string lName, int zipCode, string address,
+            string phoneNumber, string email)
         {
             List<Customer> customers = new List<Customer>();
 
@@ -126,14 +127,15 @@ namespace landlystHotel
                     rdr = sql.ExecuteReader();
                     while (rdr.Read())
                     {
-                        string custFName = (string)rdr["fName"];
-                        string custLName = (string)rdr["lName"];
-                        int custZipcode = (int)rdr["zipCode"];
-                        string custAddress = (string)rdr["address"];
-                        string custPhoneNumber = (string)rdr["PhoneNumber"];
-                        string custEmail = (string)rdr["email"];
+                        string custFName = (string) rdr["fName"];
+                        string custLName = (string) rdr["lName"];
+                        int custZipcode = (int) rdr["zipCode"];
+                        string custAddress = (string) rdr["address"];
+                        string custPhoneNumber = (string) rdr["PhoneNumber"];
+                        string custEmail = (string) rdr["email"];
 
-                        Customer customer = new Customer(custFName, custLName, custZipcode, custAddress, custPhoneNumber, custEmail);
+                        Customer customer = new Customer(custFName, custLName, custZipcode, custAddress,
+                            custPhoneNumber, custEmail);
                         customers.Add(customer);
                     }
                 }
@@ -148,7 +150,8 @@ namespace landlystHotel
             return customers;
         }
 
-        public static List<Reservation> CreateReservation(string phoneNumber, int roomNumber, DateTime checkInDate, DateTime checkoutDate)
+        public static List<Reservation> CreateReservation(string phoneNumber, int roomNumber, DateTime checkInDate,
+            DateTime checkoutDate)
         {
             List<Reservation> reservations = new List<Reservation>();
 
@@ -177,12 +180,13 @@ namespace landlystHotel
                     rdr = sql.ExecuteReader();
                     while (rdr.Read())
                     {
-                        string resPhoneNumber = (string)rdr["custPhoneNumber"];
-                        int    resRoomNumber  = (int)rdr["roomNumber"];
-                        DateTime resCheckInDate = (DateTime)rdr["checkInDate"];
-                        DateTime resCheckOutDate = (DateTime)rdr["CheckOutDate"];
+                        string resPhoneNumber = (string) rdr["custPhoneNumber"];
+                        int resRoomNumber = (int) rdr["roomNumber"];
+                        DateTime resCheckInDate = (DateTime) rdr["checkInDate"];
+                        DateTime resCheckOutDate = (DateTime) rdr["CheckOutDate"];
 
-                        Reservation reservation = new Reservation(resPhoneNumber, resRoomNumber, resCheckInDate, resCheckOutDate, daysToStay, totalPrice);
+                        Reservation reservation = new Reservation(resPhoneNumber, resRoomNumber, resCheckInDate,
+                            resCheckOutDate, daysToStay, totalPrice);
                         reservations.Add(reservation);
                     }
                 }
@@ -217,7 +221,7 @@ namespace landlystHotel
                     rdr = sql.ExecuteReader();
                     while (rdr.Read())
                     {
-                        decimal totalPrice = (decimal)rdr["totalprice"];
+                        decimal totalPrice = (decimal) rdr["totalprice"];
                         TotalPrices totalPrices = new TotalPrices(totalPrice);
 
                         prices.Add(totalPrices);
@@ -240,6 +244,54 @@ namespace landlystHotel
 
             decimal price = Convert.ToDecimal(prices[0].TotalPrice.ToString());
             return price;
+        }
+
+        public static List<Room> GetRoomsAvailableBasedOnFeatures(DateTime checkInDate,
+            DateTime checkOutDate)
+        {
+            string dateIn = checkInDate.ToString("yyyy-MM-dd");
+            string dateOut = checkOutDate.ToString("yyyy-MM-dd");
+
+            using (SqlConnection connection = new SqlConnection(Con))
+
+            {
+                connection.Open();
+
+                string sql = $@"DECLARE @RoomFeatureRS TABLE (roomNum int)
+                                DECLARE @roomNumberRs TABLE (roomNumber int,roomPrice decimal(19,4),featureDescription varchar(50),featurePrice decimal(19,4))
+                                insert into @roomNumberRs
+                                SELECT room.roomNumber,Room.price as roomPrice, fe.description, fe.price as featurePrice FROM Room
+                                INNER JOIN roomFeatures rf  ON rf.roomNumber = Room.roomNumber
+                                INNER JOIN Features fe  ON rf.featureNumber = fe.featureNumber
+                                WHERE Room.roomNumber NOT IN(SELECT reservation.roomNumber FROM reservation WHERE checkInDate <= '{dateIn}' AND checkOutDate >= '{dateOut}')
+                                insert into @roomFeatureRs SELECT roomNumber  FROM @roomNumberRs WHERE featureDescription = 'double bed'
+                                SELECT roomNum, r.price as RoomPrice ,fe.description as FeatureDescription,fe.price AS featurePrice FROM @RoomFeatureRS
+                                INNER JOIN Room r ON r.roomNumber = roomNum
+                                INNER JOIN roomFeatures rf ON rf.roomNumber = roomNum
+                                INNER JOIN Features fe ON fe.featureNumber = rf.featureNumber";
+
+                var roomFeatureDictionary = new Dictionary<int, Room>();
+                var list = connection.Query<Room, RoomAndFeatures, Room>(
+                        sql,
+                        (room, roomAndFeatures) =>
+                        {
+                            Room roomEntry;
+
+                            if (!roomFeatureDictionary.TryGetValue(room.RoomNum, out roomEntry))
+                            {
+                                roomEntry = room;
+                                roomEntry.RoomFeatures = new List<RoomAndFeatures>();
+                                roomFeatureDictionary.Add(roomEntry.RoomNum, roomEntry);
+                            }
+
+                            roomEntry.RoomFeatures.Add(roomAndFeatures);
+                            return roomEntry;
+                        },
+                        splitOn: "FeatureDescription")
+                    .Distinct()
+                    .ToList();
+                return list;
+            }
         }
     }
 }

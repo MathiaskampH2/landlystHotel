@@ -7,34 +7,6 @@ namespace landlystHotel
     {
         static void Main(string[] args)
         {
-            #region testData
-
-
-            //List<Room> rooms = HotelManager.GetAllRooms();
-
-            //foreach (Room room in rooms)
-            //{
-            //    Console.WriteLine(room.RoomNumber);
-            //}
-            //Console.Write("Enter the room number that you want to use :");
-            //int userRoomNumber = int.Parse(Console.ReadLine());
-
-            //List<TotalPrices> totalPrice = HotelManager.GeTotalPrice(userRoomNumber);
-
-            //foreach (TotalPrices price in totalPrice)
-            //{
-            //    Console.WriteLine(price.TotalPrice);
-            //}
-
-
-            //List<Features> features = HotelManager.GetRoomFeatures(userRoomNumber);
-
-            //foreach (Features feature in features)
-            //{
-            //    Console.WriteLine(feature.Description);
-            //}
-
-            #endregion
 
 
             Gui gui = new Gui();
@@ -99,6 +71,27 @@ namespace landlystHotel
 
                     case 3:
                         start = true;
+                        break;
+
+                    case 4:
+                        //    string num = "42500043";
+
+                        //    Console.WriteLine(ServerManager.CheckIfCustomerExists(num));
+                        Console.Write("Insert date in:");
+                        string dateInString = "2020-12-03"; // Console.ReadLine();
+                        Console.Write("Insert date out:");
+                        string dateOutString = "2020-12-03"; // Console.ReadLine();
+
+                        DateTime dateIn = DateTime.Parse(dateInString);
+                        DateTime dateOut = DateTime.Parse(dateOutString);
+
+                        List<Room> roomFea = HotelManager.GetRoomsAvailableBasedOnFeatures(dateIn, dateOut);
+                        foreach (Room Room in roomFea)
+                        {
+                            Console.WriteLine(Room.ToString());
+
+                        }
+
                         break;
                 }
             }
