@@ -20,16 +20,5 @@ namespace landlystHotel
             this.PhoneNumber = phoneNumber;
             this.Email = email;
         }
-
-        public override string ToString()
-        {
-            return
-                   "First Name :" + FName + "\n" +
-                   "Last Name  :" + LName + "\n" +
-                   "zipcode    :" + ZipCode + "\n" +
-                   "address    :" + Address + "\n" +
-                   "phone number :" + PhoneNumber + "\n" +
-                   "email :" + Email + "\n";
-        }
     }
 }

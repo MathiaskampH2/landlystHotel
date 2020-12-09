@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace landlystHotel
@@ -86,9 +87,12 @@ namespace landlystHotel
                         DateTime dateOut = DateTime.Parse(dateOutString);
 
                         List<Room> roomFea = HotelManager.GetRoomsAvailableBasedOnFeatures(dateIn, dateOut);
+
+                        
                         foreach (Room Room in roomFea)
                         {
-                            Console.WriteLine(Room.ToString());
+                            
+                            Console.Write(Room.ToString());
 
                         }
 

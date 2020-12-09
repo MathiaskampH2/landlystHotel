@@ -8,11 +8,6 @@ namespace landlystHotel
         public int RoomNum { get; set; }
 
         public decimal RoomPrice { get; set; }
-        //public int HotelNumber  { get; set; }
-        //public int FloorLevel { get; set; }
-        //public decimal Price { get; set; }
-        //public int Reserved { get; set; }
-        //public string Condition { get; set; }
 
         public List<RoomAndFeatures> RoomFeatures { get; set; }
 
